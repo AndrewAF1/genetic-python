@@ -7,4 +7,4 @@ class Chromosome:
         return("Hello")
 
 c = Chromosome()
-print(c.)
+print(c.toString())

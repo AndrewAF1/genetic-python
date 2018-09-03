@@ -5,12 +5,18 @@ from individual import Individual
 
 
 class Population:
-    def __init__(self, ch_size, pop_size, target, survival_fraction):
+    def __init__(self, ch_size, pop_size, target, survival_fraction, convergence_target):
         self.population = []
         self.ch_size = ch_size
         self.target = target
         self.survival_fraction = survival_fraction
         self.pop_size = pop_size
+        self.convergence_target = convergence_target
+
+        self.cur_err = 0.0
+        self.last_err = 0.0
+
+        self.in_a_row = 0
 
         for _ in range(self.pop_size):
             self.population.append(Individual(self.target, ch_size=self.ch_size))
@@ -38,23 +44,28 @@ class Population:
 
         while len(self.population)<self.pop_size:
             shuffle(fittest)
-            half_point = int(len(fittest)/2)
+            crossover_point = np.random.randint(0, int(len(fittest)))
 
-            half1 = fittest[0 : half_point]
-            half2 = fittest[half_point : len(fittest)]
+            pt1 = fittest[0 : crossover_point]
+            pt2 = fittest[crossover_point : len(fittest)]
 
-            for indiv1, indiv2 in zip(half1, half2):
+            for indiv1, indiv2 in zip(pt1, pt2):
                 if len(self.population)>=self.pop_size:
-                    break
+                    #break the loop and end the method
+                    return len(self.population)
                 new_indiv = Individual(self.target, genes=indiv1.crossover(indiv2))
                 self.population.append(new_indiv)
-        return len(self.population)
 
     def check_convergence(self):
-        pass
+        self.last_err = self.cur_err
+        self.cur_err = np.array([i.get_chromosome() for i in self.get_population()]).mean()
 
+        if self.last_err == self.cur_err:
+            self.in_a_row += 1
+        else:
+            self.in_a_row = 0
 
+        if self.in_a_row == self.convergence_target:
+            return True, self.cur_err
 
-p = Population(ch_size = 10, pop_size = 150, target = np.zeros(10), survival_fraction = 0.4)
-fittest = p.select_fittest()
-print(p.reproduce(fittest))
+        return False, self.cur_err

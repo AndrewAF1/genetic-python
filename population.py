@@ -60,7 +60,8 @@ class Population:
         self.last_err = self.cur_err
         self.cur_err = np.array([i.get_chromosome() for i in self.get_population()]).mean()
 
-        if self.last_err == self.cur_err:
+        if abs(self.last_err - self.cur_err) <= self.cur_err*0.00005:
+        #if self.last_err == self.cur_err
             self.in_a_row += 1
         else:
             self.in_a_row = 0

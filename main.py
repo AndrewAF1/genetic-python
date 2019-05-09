@@ -9,10 +9,16 @@ chromosome_size = 10000
 population_size = 10000
 target = np.zeros(chromosome_size)
 survival_fraction = 0.5
-convergence_target = 100000 #times print_iter
+convergence_target = 100000  # times print_iter
 
 
-p = Population(ch_size = chromosome_size, pop_size = population_size, target = target, survival_fraction = survival_fraction, convergence_target = convergence_target)
+p = Population(
+    ch_size=chromosome_size,
+    pop_size=population_size,
+    target=target,
+    survival_fraction=survival_fraction,
+    convergence_target=convergence_target,
+)
 
 for epoch in count(1):
     fittest = p.select_fittest()
